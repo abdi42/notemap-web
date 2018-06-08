@@ -3,6 +3,8 @@ import '../App.css';
 import Draggable, {DraggableCore} from 'react-draggable'; // Both at the same time
 import 'font-awesome/css/font-awesome.min.css';
 
+const map = document.getElementById('root')
+
 class Note extends React.Component  {
 
 
@@ -26,20 +28,11 @@ class Note extends React.Component  {
 
   componentDidMount(){
     var {note} = this.props;
-    var width = this.noteElement.current.offsetWidth;
-    var height = this.noteElement.current.offsetHeight;
+    const {top,left,width,height} = this.noteElement.current.getBoundingClientRect();
 
-    var posX = note.x - (width / 2);
-    var posY = note.y - (height / 2);
-    const {offsetLeft,offsetWidth,offsetTop,offsetHeight} = this.noteElement.current;
+    var posX = note.position.x - (width / 2);
+    var posY = note.position.y - (height / 2);
 
-    note.setTarget({
-      offsetTop,
-      offsetWidth,
-      offsetLeft,
-      offsetHeight
-    })
-    
     this.setState({noteStyles:{
       x:posX,
       y:posY,
@@ -48,6 +41,8 @@ class Note extends React.Component  {
       left:posX
     }})
 
+
+    note.setTarget({top,left,width,height})
     //this.props.didMount(this.noteElement.current)
   }
 
@@ -69,7 +64,15 @@ class Note extends React.Component  {
     this.textContainer.current.focus()
   }
 
-  handleDrag(){
+  handleDrag(e,ui){
+    const {note} = this.props;
+    const offset = getOffset(ui.node)
+    const {top,left,width,height} = this.noteElement.current.getBoundingClientRect();
+
+    console.log(note.center)
+    note.setTarget({top,left,width,height})
+
+    note.setPosition(ui.x,ui.y)
     this.textContainer.current.blur()
   }
 
@@ -80,6 +83,7 @@ class Note extends React.Component  {
   render() {
     return (
       <Draggable
+        offsetParent={document.body}
         handle=".note"
         onStart={this.handleStart.bind(this)}
         onDrag={this.handleDrag.bind(this)}
@@ -91,6 +95,14 @@ class Note extends React.Component  {
         </div>
       </Draggable>
     )
+  }
+}
+
+function getOffset(el) {
+  el = el.getBoundingClientRect();
+  return {
+    left: el.left + window.scrollX,
+    top: el.top + window.scrollY
   }
 }
 
