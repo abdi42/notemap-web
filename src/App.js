@@ -6,7 +6,7 @@ import Note from "./components/Note"
 import { SyntheticEvent } from 'react'
 import  NoteStore  from './stores/Note.js';
 import { observer, inject } from "mobx-react";
-
+import Cluster from './components/Cluster';
 
 @observer class App extends React.Component {
 
@@ -27,9 +27,9 @@ import { observer, inject } from "mobx-react";
   renderNotes(){
     return(
       this.noteStore.notes.slice().map((note,index) => {
-        console.log(note,index)
+        console.dir(this.mapElement)
         return (
-          <Note key={index} note={note} ></Note>
+          <Note key={index} note={note}  ></Note>
         )
       })
     )
@@ -51,16 +51,24 @@ import { observer, inject } from "mobx-react";
 
 
     var note = this.noteStore.addNote({
-      x:e.pageX,
-      y:e.pageY,
+      position:{
+        x:e.pageX,
+        y:e.pageY,
+      },
+      target:{
+        top: 0,
+        left: 0,
+        width: 0,
+        height: 0
+      }
     });
 
   }
 
   render() {
     return (
-      <div className="App" ref={this.map} onDoubleClick={(e) => this.handleClick(e)}>
-        {this.renderNotes()}
+      <div id="map" className="App" ref={this.mapElement} onDoubleClick={(e) => this.handleClick(e)}>
+        <Cluster></Cluster>
       </div>
     );
   }
