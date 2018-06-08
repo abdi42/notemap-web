@@ -1,4 +1,4 @@
-import { types,onSnapshot } from 'mobx-state-tree';
+import { types } from 'mobx-state-tree';
 import NoteModel from '../models/Note.js'
 
 const NoteStore = types.model('NoteStore',{

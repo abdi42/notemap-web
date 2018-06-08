@@ -1,22 +1,26 @@
-import { types } from 'mobx-state-tree';
+import { types,onPatch } from 'mobx-state-tree';
 
 const Center = types.model({
-  offsetLeft: types.number,
-  offsetWidth: types.number,
-  offsetTop: types.number,
-  offsetHeight: types.number
+  top: types.number,
+  left: types.number,
+  width: types.number,
+  height: types.number
+})
+
+const Position = types.model({
+  x : types.number,
+  y : types.number,
 })
 
 const NoteModel = types.model({
-  x : types.number,
-  y : types.number,
-  target:types.maybe(Center)
+  position:Position,
+  target:Center
 })
 .views(self => ({
   get center() {
     return {
-      x: self.target.offsetLeft + self.target.offsetWidth / 2,
-      y: self.target.offsetTop + self.target.offsetHeight / 2
+      x: self.target.left + self.target.width / 2,
+      y: self.target.top + self.target.height / 2
     }
   }
 }))
@@ -24,11 +28,15 @@ const NoteModel = types.model({
   setTarget(target){
     self.target = target
   },
+  setPosition(x,y){
+    self.position = {x,y}
+  },
   distanceFrom(pos){
-    let xDist = (self.x - pos.x);
-    let yDist = (self.y - pos.y);
+    let xDist = (self.center.x - pos.x);
+    let yDist = (self.center.y - pos.y);
 
     let distance = Math.sqrt((xDist * xDist) + (yDist * yDist));
+
     return distance
   }
 }))
